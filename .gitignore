@@ -1,0 +1,31 @@
+# Environment variables - DO NOT COMMIT
+.env
+server_using_lanchain/.env
+
+# Python
+server_using_lanchain/myvenv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node
+node_modules/
+
+# Database
+*.sqlite3
+postgres_using_lanchain_data/
+
+# IDE
+.vscode/
+.idea/
+
+
+
+# Vector DB data
+qdrant_using_lanchain_data/aliases
+qdrant_using_lanchain_data/collections
+qdrant_using_lanchain_data
