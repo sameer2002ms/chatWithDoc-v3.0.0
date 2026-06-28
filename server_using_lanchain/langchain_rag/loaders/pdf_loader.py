@@ -4,10 +4,9 @@ from datetime import datetime
 from typing import List
 
 
-def load_pdf(file_path: str) -> List[Document]:
+def load_pdf(file_path: str, doc_id: str) -> List[Document]:
     """
     Load a PDF file and return LangChain Documents.
-    NO document_id logic here.
     """
     documents: List[Document] = []
 
@@ -20,6 +19,7 @@ def load_pdf(file_path: str) -> List[Document]:
                 continue
 
             metadata = {
+                "doc_id": doc_id,
                 "source_type": "pdf",
                 "source_name": file_path,
                 "page_number": page_number,

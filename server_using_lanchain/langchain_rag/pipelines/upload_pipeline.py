@@ -21,13 +21,13 @@ def ingest_document(
 
     # 1️⃣ Load document
     if source_type == "pdf":
-        documents = load_pdf(source_value)
+        documents = load_pdf(source_value, str(document_id))
     elif source_type == "word":
-        documents = load_word(source_value)
+        documents = load_word(source_value, str(document_id))
     elif source_type == "html":
-        documents = load_html(source_value)
+        documents = load_html(source_value, str(document_id))
     elif source_type == "url":
-        documents = load_url(source_value)
+        documents = load_url(source_value, str(document_id))
     else:
         raise ValueError("Unsupported source_type")
 
