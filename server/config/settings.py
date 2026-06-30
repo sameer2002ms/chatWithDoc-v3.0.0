@@ -124,7 +124,7 @@ REDIS_URL = os.getenv(
     "redis://redis:6379/0",
 )
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://chat-with-doc-v3-0-0-gub70mly0-devsameer1.vercel.app"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://chat-with-doc-v3-0-0.vercel.app" "https://chat-with-doc-v3-0-0-gub70mly0-devsameer1.vercel.app"]
 
 
 # print('localhost', DATABASES)
