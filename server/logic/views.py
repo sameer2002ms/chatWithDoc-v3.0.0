@@ -1,10 +1,17 @@
+import os
+import tempfile
+import uuid
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import os
-from django.conf import settings
 
 from rag_pipeline.pipelines.upload_pipeline import ingest_document
+from rag_pipeline.storage.supabase_storage import (
+    upload_pdf_bytes,
+    download_pdf_to_path,
+    delete_pdf,
+)
 from logic.models import Document
 
 from .serializers import LangChainAskSerializer, UploadDocumentSerializer
@@ -22,22 +29,49 @@ class LangChainUploadAPIView(APIView):
         data = serializer.validated_data
         source_type = data["source_type"]
         doc = None
+        storage_path = None
+        temp_path = None
 
         try:
-            # 1️⃣ Create document in UPLOADING state
-            doc = Document.objects.create(
-                source_type=source_type,
-                source_name=(
-                    data.get("url") if source_type == "url" else data["file"].name
-                ),
-                file=data.get("file") if source_type != "url" else None,
-                status="UPLOADING",
-            )
+            if source_type == "url":
+                # Unchanged: URL-sourced documents don't touch Supabase storage
+                doc = Document.objects.create(
+                    source_type=source_type,
+                    source_name=data["url"],
+                    status="UPLOADING",
+                )
+                source_value = data["url"]
 
-            # 2️⃣ Resolve source
-            source_value = data["url"] if source_type == "url" else doc.file.path
+            else:
+                uploaded_file = data["file"]
+                file_bytes = uploaded_file.read()
 
-            # 3️⃣ Ingest
+                if uploaded_file.content_type != "application/pdf":
+                    return Response(
+                        {"error": "Only PDF files are accepted"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                # 1️⃣ Upload to Supabase Storage first
+                storage_path = f"documents/{uuid.uuid4()}_{uploaded_file.name}"
+                upload_pdf_bytes(storage_path, file_bytes)
+
+                # 2️⃣ Create the Document record, pointing at the Supabase object
+                doc = Document.objects.create(
+                    source_type=source_type,
+                    source_name=uploaded_file.name,
+                    storage_path=storage_path,
+                    status="UPLOADING",
+                )
+
+                # 3️⃣ Pull the file back down to a temp path for ingestion
+                #    (your pipeline reads from a local filesystem path)
+                fd, temp_path = tempfile.mkstemp(suffix=".pdf")
+                os.close(fd)
+                download_pdf_to_path(storage_path, temp_path)
+                source_value = temp_path
+
+            # 4️⃣ Ingest
             ingest_document(
                 document_id=doc.id,
                 source_type=source_type,
@@ -45,11 +79,11 @@ class LangChainUploadAPIView(APIView):
                 collection_name="langchain_rag_collection",
             )
 
-            # 4️⃣ Delete original file after processing (save disk space)
-            if source_type != "url" and doc.file:
-                doc.file.delete(save=False)
+            # 5️⃣ Clean up the local temp copy (Supabase keeps the permanent copy)
+            if temp_path and os.path.exists(temp_path):
+                os.remove(temp_path)
 
-            # 5️⃣ Mark READY
+            # 6️⃣ Mark READY
             doc.status = "READY"
             doc.save(update_fields=["status"])
 
@@ -62,10 +96,13 @@ class LangChainUploadAPIView(APIView):
             )
 
         except Exception as exc:
+            if temp_path and os.path.exists(temp_path):
+                os.remove(temp_path)
+
             if doc:
-                # Clean up file if processing failed
-                if hasattr(doc, "file") and doc.file and source_type != "url":
-                    doc.file.delete(save=False)
+                # Roll back the Supabase object on failure too
+                if storage_path:
+                    delete_pdf(storage_path)
                 doc.status = "FAILED"
                 doc.save(update_fields=["status"])
 
@@ -73,6 +110,8 @@ class LangChainUploadAPIView(APIView):
                 {"error": str(exc)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
 class LangChainAskAPIView(APIView):
 
     def post(self, request):
