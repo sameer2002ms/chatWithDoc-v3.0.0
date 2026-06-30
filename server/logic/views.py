@@ -53,7 +53,7 @@ class LangChainUploadAPIView(APIView):
                     )
 
                 # 1️⃣ Upload to Supabase Storage first
-                storage_path = f"documents/{uuid.uuid4()}_{uploaded_file.name}"
+                storage_path = f"{request.user.id}/{uuid.uuid4()}_{uploaded_file.name}"
                 upload_pdf_bytes(storage_path, file_bytes)
 
                 # 2️⃣ Create the Document record, pointing at the Supabase object
