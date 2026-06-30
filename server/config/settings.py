@@ -119,7 +119,7 @@ RATE_LIMIT_EXCLUDED_PATHS = (
     "/media/",
 )
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://chat-with-doc-v3-0-0-gub70mly0-devsameer1.vercel.app"]
 
 
 # print('localhost', DATABASES)
