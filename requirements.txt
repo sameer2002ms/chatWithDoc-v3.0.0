@@ -18,6 +18,7 @@ langchain-community
 langchain-text-splitters
 
 redis
+
 djangorestframework-simplejwt==5.5.1
 django-cors-headers
 dj-database-url
