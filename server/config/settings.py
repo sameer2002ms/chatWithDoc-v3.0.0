@@ -136,7 +136,7 @@ REDIS_URL = os.getenv(
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173",
                         "https://chat-with-doc-v3-0-0.vercel.app",
-                        "https://chat-with-doc-v3-0-0.vercel.app/",
+                        "https://chat-with-doc-v3-0-0.vercel.app",
                         "https://chat-with-doc-v3-0-0-frontend-ikdrobhid-devsameer1.vercel.app",
                         "https://chat-with-doc-v3-0-0-gub70mly0-devsameer1.vercel.app"
                         ]
