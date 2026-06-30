@@ -32,3 +32,33 @@ qdrant_using_lanchain_data
 
 
 documents/
+
+
+# Qdrant local database
+qdrant_data/
+
+# Redis persistence (if any)
+redis_data/
+
+# PostgreSQL data
+postgres_data/
+
+# Docker volumes
+volumes/
+
+# Environment files
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Vite
+dist/
+
+# Logs
+*.log
