@@ -1,79 +1,50 @@
-import { useState } from 'react'
-import './App.css'
-import { askQuestion, uploadDocument } from './api'
-import AskPanel from './components/AskPanel'
-import UploadPanel from './components/UploadPanel'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import DashboardLayout from "./components/layout/DashboardLayout";
 
-function App() {
-  const [uploading, setUploading] = useState(false)
-  const [asking, setAsking] = useState(false)
-  const [uploadResult, setUploadResult] = useState(null)
-  const [uploadError, setUploadError] = useState('')
-  const [askResult, setAskResult] = useState(null)
-  const [askError, setAskError] = useState('')
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Upload from "./pages/Upload";
+import Chat from "./pages/Chat";
+import HistoryPage from "./pages/HistoryPage";
+import NotFound from "./pages/NotFound";
 
-  const handleUpload = async ({ sourceType, file, url }) => {
-    setUploading(true)
-    setUploadError('')
-    setUploadResult(null)
-
-    try {
-      const result = await uploadDocument({ sourceType, file, url })
-      setUploadResult(result)
-    } catch (error) {
-      setUploadError(error.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const handleAsk = async ({ question, topK }) => {
-    setAsking(true)
-    setAskError('')
-    setAskResult(null)
-
-    try {
-      const result = await askQuestion({ question, topK })
-      setAskResult(result)
-    } catch (error) {
-      setAskError(error.message)
-    } finally {
-      setAsking(false)
-    }
-  }
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.18),_transparent_45%),linear-gradient(135deg,_#f8fafc,_#eef2ff)] px-4 py-8 text-slate-800 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8">
-        <header className="rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-sm backdrop-blur">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-indigo-600">
-            LangChain RAG Studio
-          </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-            Upload documents and ask questions instantly.
-          </h1>
-          <p className="mt-4 max-w-3xl text-lg text-slate-600">
-            This interface connects to your Django backend to ingest a document, index it, and answer questions from the most recent ready document.
-          </p>
-        </header>
+    <AuthProvider>
+      <BrowserRouter>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              fontSize: "14px",
+              borderRadius: "8px",
+              border: "1px solid #e4e4e7",
+              color: "#18181b",
+            },
+          }}
+        />
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <main className="grid gap-8 lg:grid-cols-2">
-          <UploadPanel
-            onUpload={handleUpload}
-            isUploading={uploading}
-            result={uploadResult}
-            error={uploadError}
-          />
-          <AskPanel
-            onAsk={handleAsk}
-            isAsking={asking}
-            result={askResult}
-            error={askError}
-          />
-        </main>
-      </div>
-    </div>
-  )
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/upload" element={<Upload />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/history" element={<HistoryPage />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
-
-export default App
