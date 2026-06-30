@@ -87,15 +87,25 @@ AUTH_USER_MODEL = "account.User"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("DB_NAME", "ai_doc_db"),
+#         "USER": os.getenv("DB_USER", "ai_doc_user"),
+#         "PASSWORD": os.getenv("DB_PASSWORD", "AIdocdb@123"),
+#         "HOST": os.getenv("DB_HOST", "localhost"),
+#         "PORT": os.getenv("DB_PORT", "5432"),
+#     }
+# }
+
+import dj_database_url
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "ai_doc_db"),
-        "USER": os.getenv("DB_USER", "ai_doc_user"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "AIdocdb@123"),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "5432"),
-    }
+    "default": dj_database_url.parse(
+        os.environ["DATABASE_URL"],
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 # ==============================================================================
@@ -126,7 +136,7 @@ REDIS_URL = os.getenv(
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173",
                         "https://chat-with-doc-v3-0-0.vercel.app",
-                        "https://chat-with-doc-v3-0-0.vercel.app/",
+                        "https://chat-with-doc-v3-0-0.vercel.app",
                         "https://chat-with-doc-v3-0-0-frontend-ikdrobhid-devsameer1.vercel.app",
                         "https://chat-with-doc-v3-0-0-gub70mly0-devsameer1.vercel.app"
                         ]
