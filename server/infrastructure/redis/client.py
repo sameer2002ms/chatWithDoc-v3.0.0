@@ -22,12 +22,8 @@ class RedisClient:
         Lazily initialize and return the Redis client.
         """
         if self._client is None:
-            self._client = redis.Redis(
-                host=settings.REDIS_HOST,
-                port=settings.REDIS_PORT,
-                db=settings.REDIS_DB,
-                password=settings.REDIS_PASSWORD,
-                ssl=settings.REDIS_SSL,
+            self._client = redis.from_url(
+                settings.REDIS_URL,
                 decode_responses=True,
             )
 
