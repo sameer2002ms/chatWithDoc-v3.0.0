@@ -11,6 +11,7 @@ class Document(models.Model):
 
     source_type = models.CharField(max_length=20)
     source_name = models.CharField(max_length=255)
+    storage_path = models.CharField(max_length=512, null=True, blank=True)
     file = models.FileField(upload_to="documents/", null=True, blank=True)
 
     status = models.CharField(

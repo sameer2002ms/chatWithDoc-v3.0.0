@@ -134,6 +134,13 @@ REDIS_URL = os.getenv(
     "redis://redis:6379/0",
 )
 
+
+import os
+ 
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_SERVICE_ROLE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+
+
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173",
                         "https://chat-with-doc-v3-0-0.vercel.app",
                         "https://chat-with-doc-v3-0-0.vercel.app",
