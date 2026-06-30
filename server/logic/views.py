@@ -4,13 +4,13 @@ from rest_framework import status
 import os
 from django.conf import settings
 
-from langchain_rag.pipelines.upload_pipeline import ingest_document
-from lc_logic.models import Document
+from rag_pipeline.pipelines.upload_pipeline import ingest_document
+from logic.models import Document
 
 from .serializers import LangChainAskSerializer, UploadDocumentSerializer
-from langchain_rag.vectorstores.qdrant_store import get_vectorstore
-from langchain_rag.chains.rag_chain import build_answer_chain
-from langchain_rag.vectorstores.qdrant_store import retrieve_by_document_id
+from rag_pipeline.vectorstores.qdrant_store import get_vectorstore
+from rag_pipeline.chains.rag_chain import build_answer_chain
+from rag_pipeline.vectorstores.qdrant_store import retrieve_by_document_id
 
 
 class LangChainUploadAPIView(APIView):
@@ -131,4 +131,17 @@ class LangChainAskAPIView(APIView):
                 "answer": answer,
             },
             status=status.HTTP_200_OK,
+        )
+
+
+class RateLimitTestAPIView(APIView):
+    """
+    Temporary endpoint for testing the rate limiter.
+    """
+
+    def get(self, request):
+        return Response(
+            {
+                "message": "Rate limiter is working!",
+            }
         )

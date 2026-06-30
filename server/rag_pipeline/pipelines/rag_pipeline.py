@@ -1,9 +1,9 @@
-from lc_logic.models import Document
-from langchain_rag.vectorstores.qdrant_store import (
+from logic.models import Document
+from rag_pipeline.vectorstores.qdrant_store import (
     get_vectorstore,
     retrieve_by_document_id,
 )
-from langchain_rag.chains.rag_chain import build_answer_chain
+from rag_pipeline.chains.rag_chain import build_answer_chain
 
 
 def run_langchain_rag(

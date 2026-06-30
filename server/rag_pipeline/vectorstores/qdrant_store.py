@@ -11,7 +11,7 @@ from qdrant_client.http.models import (
     MatchValue,
 )
 
-from langchain_rag.embeddings.openai_embedding import get_embeddings
+from rag_pipeline.embeddings.openai_embedding import get_embeddings
 
 
 @lru_cache

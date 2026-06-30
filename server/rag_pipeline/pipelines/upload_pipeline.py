@@ -1,10 +1,10 @@
-from langchain_rag.loaders.pdf_loader import load_pdf
-from langchain_rag.loaders.word_loader import load_word
-from langchain_rag.loaders.html_loader import load_html
-from langchain_rag.loaders.url_loader import load_url
+from rag_pipeline.loaders.pdf_loader import load_pdf
+from rag_pipeline.loaders.word_loader import load_word
+from rag_pipeline.loaders.html_loader import load_html
+from rag_pipeline.loaders.url_loader import load_url
 
-from langchain_rag.splitters.token_splitter import chunk_documents
-from langchain_rag.vectorstores.qdrant_store import get_vectorstore
+from rag_pipeline.splitters.token_splitter import chunk_documents
+from rag_pipeline.vectorstores.qdrant_store import get_vectorstore
 
 
 def ingest_document(

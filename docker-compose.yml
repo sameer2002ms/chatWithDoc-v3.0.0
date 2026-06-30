@@ -5,10 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: rag_backend_using_lanchain
+    container_name: chatwithdoc_backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./server_using_lanchain:/app
+      - ./server:/app
     ports:
       - "8000:8000"
     env_file:
@@ -19,7 +19,7 @@ services:
 
   postgres:
     image: postgres:15
-    container_name: chatwithdoc_postgres_using_lanchain
+    container_name: chatwithdoc_postgres
     ports:
       - "5432:5432"
     env_file:
@@ -29,17 +29,27 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - postgres_using_lanchain_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
 
   qdrant:
     image: qdrant/qdrant:latest
-    container_name: rag_qdrant_using_lanchain
+    container_name: chatwithdoc_qdrant
     ports:
       - "6333:6333"
     volumes:
-      - ./qdrant_using_lanchain_data:/qdrant/storage    
+      - ./qdrant_data:/qdrant/storage    
+
+  redis:
+    image: redis:7-alpine
+    container_name: chatwithdoc_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data    
 
 volumes:
-  postgres_using_lanchain_data:
-  qdrant_using_lanchain_data:
+  postgres_data:
+  qdrant_data:
+  redis_data:

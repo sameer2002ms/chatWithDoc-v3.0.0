@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "lc_logic",
+    "logic",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.rate_limit.RateLimitMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -91,6 +92,27 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
+
+# ==============================================================================
+# Redis Configuration
+# ==============================================================================
+
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_DB = int(os.getenv("REDIS_DB", 0))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD") or None
+REDIS_SSL = os.getenv("REDIS_SSL", "False").lower() == "true"
+
+RATE_LIMIT = int(os.getenv("RATE_LIMIT", 10))
+RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", 60))
+
+
+RATE_LIMIT_EXCLUDED_PATHS = (
+    "/admin/",
+    "/health/",
+    "/static/",
+    "/media/",
+)
 
 # print('localhost', DATABASES)
 
