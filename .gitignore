@@ -29,3 +29,6 @@ postgres_using_lanchain_data/
 qdrant_using_lanchain_data/aliases
 qdrant_using_lanchain_data/collections
 qdrant_using_lanchain_data
+
+
+documents/
