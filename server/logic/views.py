@@ -27,49 +27,39 @@ class LangChainUploadAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        source_type = data["source_type"]
+        source_type = data.get("source_type", "pdf")
         doc = None
         storage_path = None
         temp_path = None
 
         try:
-            if source_type == "url":
-                # Unchanged: URL-sourced documents don't touch Supabase storage
-                doc = Document.objects.create(
-                    source_type=source_type,
-                    source_name=data["url"],
-                    status="UPLOADING",
-                )
-                source_value = data["url"]
+            uploaded_file = data["file"]
+            file_bytes = uploaded_file.read()
 
-            else:
-                uploaded_file = data["file"]
-                file_bytes = uploaded_file.read()
-
-                if uploaded_file.content_type != "application/pdf":
-                    return Response(
-                        {"error": "Only PDF files are accepted"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                # 1️⃣ Upload to Supabase Storage first
-                storage_path = f"{request.user.id}/{uuid.uuid4()}_{uploaded_file.name}"
-                upload_pdf_bytes(storage_path, file_bytes)
-
-                # 2️⃣ Create the Document record, pointing at the Supabase object
-                doc = Document.objects.create(
-                    source_type=source_type,
-                    source_name=uploaded_file.name,
-                    storage_path=storage_path,
-                    status="UPLOADING",
+            if uploaded_file.content_type != "application/pdf":
+                return Response(
+                    {"error": "Only PDF files are accepted"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-                # 3️⃣ Pull the file back down to a temp path for ingestion
-                #    (your pipeline reads from a local filesystem path)
-                fd, temp_path = tempfile.mkstemp(suffix=".pdf")
-                os.close(fd)
-                download_pdf_to_path(storage_path, temp_path)
-                source_value = temp_path
+            # 1️⃣ Upload to Supabase Storage first
+            storage_path = f"{request.user.id}/{uuid.uuid4()}_{uploaded_file.name}"
+            upload_pdf_bytes(storage_path, file_bytes)
+
+            # 2️⃣ Create the Document record, pointing at the Supabase object
+            doc = Document.objects.create(
+                source_type=source_type,
+                source_name=uploaded_file.name,
+                storage_path=storage_path,
+                status="UPLOADING",
+            )
+
+            # 3️⃣ Pull the file back down to a temp path for ingestion
+            #    (your pipeline reads from a local filesystem path)
+            fd, temp_path = tempfile.mkstemp(suffix=".pdf")
+            os.close(fd)
+            download_pdf_to_path(storage_path, temp_path)
+            source_value = temp_path
 
             # 4️⃣ Ingest
             ingest_document(

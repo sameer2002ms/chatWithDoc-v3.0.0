@@ -1,6 +1,6 @@
 # 📄 RAG-based Document Question Answering System (LangChain + Qdrant)
 
-## Version 2 of the chatWithDoc (RAG Document Assistant) with LangChain integration, multi-format ingestion, Runnable chains, and metadata-scoped retrieval.
+## Version 2 of the chatWithDoc (RAG Document Assistant) with LangChain integration, PDF-first ingestion, Runnable chains, and metadata-scoped retrieval.
 
 ## Previous Version (V1)
 
@@ -19,7 +19,7 @@ The V1 project focused on:
 This V2 version extends the architecture with:
 
 * LangChain Runnable chains
-* Multi-format ingestion
+* PDF-first document ingestion
 * Metadata-scoped retrieval
 * Improved modularity and scalability
 * Better production-oriented design
@@ -30,11 +30,8 @@ This project is designed with **clean architecture, cost efficiency, and intervi
 
 ## 🚀 Features
 
-- 📄 **Multi-format ingestion**
+- 📄 **PDF-first ingestion**
   - PDF
-  - Word (`.docx`)
-  - HTML
-  - Public URLs
 
 - ✂️ **Token-based chunking with overlap** (LangChain)
 - 🧠 **OpenAI embeddings** (`text-embedding-3-small`)
@@ -54,7 +51,7 @@ This project is designed with **clean architecture, cost efficiency, and intervi
 Client
  └──> Django REST API
         ├── /api/upload
-        │     ├── Load document (PDF / Word / HTML / URL)
+        │     ├── Load document (PDF)
         │     ├── Token-based chunking
         │     ├── Embedding generation (OpenAI)
         │     └── Store vectors in Qdrant (with metadata)

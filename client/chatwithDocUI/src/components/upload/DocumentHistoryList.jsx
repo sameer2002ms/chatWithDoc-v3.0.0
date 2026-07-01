@@ -1,9 +1,9 @@
-import { FileText, FileType, Globe, Link2 } from "lucide-react";
+import { FileText } from "lucide-react";
 import StatusBadge from "../ui/StatusBadge";
 import EmptyState from "../ui/EmptyState";
 import { formatRelativeTime } from "../../utils/format";
 
-const ICONS = { pdf: FileText, docx: FileType, doc: FileType, html: Globe, url: Link2 };
+const ICONS = { pdf: FileText };
 
 export default function DocumentHistoryList({ documents = [] }) {
   if (!documents.length) {
@@ -11,7 +11,7 @@ export default function DocumentHistoryList({ documents = [] }) {
       <EmptyState
         icon={FileText}
         title="No documents yet"
-        description="Documents you upload or index from a URL will show up here."
+        description="Uploaded PDF documents will show up here."
       />
     );
   }

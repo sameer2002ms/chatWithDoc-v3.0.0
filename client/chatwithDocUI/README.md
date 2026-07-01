@@ -35,8 +35,7 @@ These are the endpoints the API layer calls. Adjust `src/api/*.js` if your DRF U
 | Refresh token | POST | `/auth/token/refresh/` |
 | Logout (blacklist refresh) | POST | `/auth/logout/` |
 | Current user | GET | `/auth/me/` |
-| Upload file (PDF/Word/HTML) | POST | `/documents/upload/` (multipart, field `file`) |
-| Index a URL | POST | `/documents/upload-url/` (`{ url }`) |
+| Upload file (PDF only) | POST | `/documents/upload/` (multipart, field `file`) |
 | List documents | GET | `/documents/` |
 | Current indexed document | GET | `/documents/current/` |
 | Ask a question | POST | `/chat/ask/` (`{ question }`) |
