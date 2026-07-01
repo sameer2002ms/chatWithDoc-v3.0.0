@@ -8,7 +8,7 @@ A fully integrated frontend + Django REST backend deployment with PDF-first inge
 
 This project is the upgraded evolution of the original RAG backend implementation:
 
-➡️ https://github.com/sameer2002ms/chatWithDoc-using-Langchain-v2.0.0
+➡️ https://github.com/sameer2002ms/chatWithDoc
 
 The V1 project focused on:
 
@@ -19,6 +19,8 @@ The V1 project focused on:
 * Grounded document question answering
 
 This V2 version extends the architecture with:
+
+➡️ https://github.com/sameer2002ms/chatWithDoc-using-Langchain-v2.0.0
 
 * LangChain Runnable chains
 * PDF-first document ingestion
