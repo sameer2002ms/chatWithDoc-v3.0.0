@@ -1,8 +1,4 @@
 from rag_pipeline.loaders.pdf_loader import load_pdf
-from rag_pipeline.loaders.word_loader import load_word
-from rag_pipeline.loaders.html_loader import load_html
-from rag_pipeline.loaders.url_loader import load_url
-
 from rag_pipeline.splitters.token_splitter import chunk_documents
 from rag_pipeline.vectorstores.qdrant_store import get_vectorstore
 
@@ -22,12 +18,6 @@ def ingest_document(
     # 1️⃣ Load document
     if source_type == "pdf":
         documents = load_pdf(source_value, str(document_id))
-    elif source_type == "word":
-        documents = load_word(source_value, str(document_id))
-    elif source_type == "html":
-        documents = load_html(source_value, str(document_id))
-    elif source_type == "url":
-        documents = load_url(source_value, str(document_id))
     else:
         raise ValueError("Unsupported source_type")
 

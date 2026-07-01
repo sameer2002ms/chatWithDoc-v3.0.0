@@ -11,8 +11,8 @@ import { formatRelativeTime } from "../utils/format";
 // backend endpoint is available in this environment.
 const MOCK_DOCUMENTS = [
   { id: 1, name: "research-notes.pdf", type: "pdf", status: "indexed", uploadedAt: new Date(Date.now() - 2 * 3600 * 1000), size: "1.2 MB" },
-  { id: 2, name: "product-spec.docx", type: "docx", status: "indexed", uploadedAt: new Date(Date.now() - 26 * 3600 * 1000), size: "480 KB" },
-  { id: 3, name: "release-notes.html", type: "html", status: "indexed", uploadedAt: new Date(Date.now() - 4 * 24 * 3600 * 1000), size: "64 KB" },
+  { id: 2, name: "product-spec.pdf", type: "pdf", status: "indexed", uploadedAt: new Date(Date.now() - 26 * 3600 * 1000), size: "480 KB" },
+  { id: 3, name: "release-notes.pdf", type: "pdf", status: "indexed", uploadedAt: new Date(Date.now() - 4 * 24 * 3600 * 1000), size: "64 KB" },
 ];
 
 export default function Upload() {
@@ -37,7 +37,7 @@ export default function Upload() {
     <div>
       <PageHeader
         title="Upload Documents"
-        description="Add PDFs, Word files, HTML pages, or a URL to build your knowledge base."
+        description="Add PDF documents to build your knowledge base."
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">

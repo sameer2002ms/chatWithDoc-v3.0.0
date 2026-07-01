@@ -58,7 +58,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--color-ink-900)]">Upload a document</p>
-                  <p className="text-xs text-[var(--color-ink-500)]">PDF, Word, HTML, or a URL</p>
+                  <p className="text-xs text-[var(--color-ink-500)]">PDF only</p>
                 </div>
               </div>
               <ArrowUpRight className="h-4 w-4 text-[var(--color-ink-400)]" />

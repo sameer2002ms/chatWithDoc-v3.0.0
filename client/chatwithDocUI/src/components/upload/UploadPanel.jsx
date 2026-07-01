@@ -1,18 +1,15 @@
 import { useCallback, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { UploadCloud, FileText, FileType, Globe, X, CheckCircle2, AlertCircle, Link2 } from "lucide-react";
+import { UploadCloud, FileText, X, CheckCircle2, AlertCircle } from "lucide-react";
 import Button from "../ui/Button";
-import Input from "../ui/Input";
 import { documentApi } from "../../api/documentApi";
 import { formatBytes } from "../../utils/format";
 
 const ACCEPTED_TYPES = [
   { label: "PDF", icon: FileText, ext: ".pdf" },
-  { label: "Word", icon: FileType, ext: ".doc, .docx" },
-  { label: "HTML", icon: Globe, ext: ".html" },
 ];
 
-const ACCEPT_ATTR = ".pdf,.doc,.docx,.html";
+const ACCEPT_ATTR = ".pdf";
 
 export default function UploadPanel({ onUploaded }) {
   const inputRef = useRef(null);
@@ -22,9 +19,6 @@ export default function UploadPanel({ onUploaded }) {
   const [status, setStatus] = useState("idle"); // idle | uploading | success | error
   const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState(null);
-
-  const [url, setUrl] = useState("");
-  const [urlStatus, setUrlStatus] = useState("idle");
 
   const resetFileState = () => {
     setFile(null);
@@ -71,23 +65,6 @@ export default function UploadPanel({ onUploaded }) {
     }
   };
 
-  const submitUrl = async (e) => {
-    e.preventDefault();
-    if (!url.trim()) return;
-    setUrlStatus("uploading");
-    try {
-      const data = await documentApi.uploadUrl(url.trim());
-      setUrlStatus("success");
-      toast.success("URL submitted for indexing");
-      setUrl("");
-      onUploaded?.(data);
-    } catch (err) {
-      setUrlStatus("error");
-      toast.error(err?.response?.data?.detail || "Could not fetch that URL.");
-    } finally {
-      setTimeout(() => setUrlStatus("idle"), 1500);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -118,7 +95,7 @@ export default function UploadPanel({ onUploaded }) {
             browse
           </button>
         </p>
-        <p className="mt-1 text-xs text-[var(--color-ink-500)]">PDF, Word, or HTML · up to 25MB</p>
+        <p className="mt-1 text-xs text-[var(--color-ink-500)]">PDF only · up to 25MB</p>
         <input
           ref={inputRef}
           type="file"
@@ -212,31 +189,6 @@ export default function UploadPanel({ onUploaded }) {
         </div>
       )}
 
-      {/* URL upload */}
-      <div className="rounded-xl border border-[var(--color-border)] bg-white p-4">
-        <div className="mb-3 flex items-center gap-2">
-          <Link2 className="h-4 w-4 text-[var(--color-ink-700)]" />
-          <h3 className="text-sm font-medium text-[var(--color-ink-900)]">Index a web page</h3>
-        </div>
-        <form onSubmit={submitUrl} className="flex flex-col gap-3 sm:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="https://example.com/article"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              type="url"
-            />
-          </div>
-          <Button
-            type="submit"
-            variant="secondary"
-            isLoading={urlStatus === "uploading"}
-            className="sm:w-auto"
-          >
-            Fetch & index
-          </Button>
-        </form>
-      </div>
     </div>
   );
 }
