@@ -19,7 +19,7 @@ def load_pdf(file_path: str, doc_id: str) -> List[Document]:
                 continue
 
             metadata = {
-                "doc_id": doc_id,
+                # "doc_id": doc_id,
                 "source_type": "pdf",
                 "source_name": file_path,
                 "page_number": page_number,
