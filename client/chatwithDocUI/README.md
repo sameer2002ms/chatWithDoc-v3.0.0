@@ -36,10 +36,7 @@ These are the endpoints the API layer calls. Adjust `src/api/*.js` if your DRF U
 | Logout (blacklist refresh) | POST | `/auth/logout/` |
 | Current user | GET | `/auth/me/` |
 | Upload file (PDF only) | POST | `/documents/upload/` (multipart, field `file`) |
-| List documents | GET | `/documents/` |
-| Current indexed document | GET | `/documents/current/` |
 | Ask a question | POST | `/chat/ask/` (`{ question }`) |
-| Question history | GET | `/chat/history/` |
 
 The Dashboard, Upload history list, and History page currently render mock data so the UI is fully demoable without a live backend — swap the `MOCK_*` constants in `src/pages/Dashboard.jsx`, `src/pages/Upload.jsx`, and `src/pages/HistoryPage.jsx` for the corresponding `documentApi` / `chatApi` calls once you're ready to wire them up.
 

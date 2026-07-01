@@ -30,7 +30,7 @@ export default function Login() {
     try {
       await login(form);
       toast.success("Welcome back");
-      const redirectTo = location.state?.from?.pathname || "/dashboard";
+      const redirectTo = location.state?.from?.pathname || "/upload";
       navigate(redirectTo, { replace: true });
     } catch (err) {
       const message =
