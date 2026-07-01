@@ -16,11 +16,19 @@ from rag_pipeline.embeddings.openai_embedding import get_embeddings
 
 @lru_cache
 def get_qdrant_client() -> QdrantClient:
-    """
-    Singleton Qdrant client (Docker-safe).
-    """
-    qdrant_url = os.getenv("QDRANT_URL", "http://qdrant:6333")
-    return QdrantClient(url=qdrant_url)
+    url = os.getenv("QDRANT_URL")
+
+    if url:
+        return QdrantClient(
+            url=url,
+            api_key=os.getenv("QDRANT_API_KEY"),
+            check_compatibility=False,
+        )
+
+    return QdrantClient(
+        host="qdrant",
+        port=6333,
+    )
 
 
 def get_vectorstore(collection_name: str) -> QdrantVectorStore:
