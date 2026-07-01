@@ -10,8 +10,8 @@ const ACCEPTED_TYPES = [
   { label: "PDF", icon: FileText, ext: ".pdf" },
 ];
 
-
 const ACCEPT_ATTR = ".pdf";
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
 const STATUS_TONE = {
   idle: "neutral",
@@ -37,16 +37,43 @@ export default function UploadPanel({ onUploaded }) {
     setResult(null);
   };
 
+  const validateFile = (selected) => {
+    if (!selected) {
+      return "No file selected.";
+    }
+
+    const isPdf = selected.type === "application/pdf" || selected.name.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      return "Only PDF files are allowed.";
+    }
+
+    if (selected.size > MAX_FILE_SIZE) {
+      return "Files larger than 1MB cannot be uploaded.";
+    }
+
+    return null;
+  };
+
   const handleFiles = useCallback((fileList) => {
     const selected = fileList?.[0];
     if (!selected) return;
+
+    const validationError = validateFile(selected);
+    if (validationError) {
+      setFile(null);
+      setStatus("error");
+      setErrorMessage(validationError);
+      setResult(null);
+      return;
+    }
+
     setFile(selected);
     setStatus("idle");
     setErrorMessage("");
     setResult(null);
   }, []);
 
-  
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
@@ -142,6 +169,15 @@ export default function UploadPanel({ onUploaded }) {
             ))}
           </div>
         </div>
+
+        {errorMessage && !file && (
+          <div className="rounded-3xl bg-[var(--color-rose-50)] p-4 text-sm text-[var(--color-rose-700)]">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 text-[var(--color-rose-600)]" />
+              <p>{errorMessage}</p>
+            </div>
+          </div>
+        )}
 
         {file && (
           <Card className="space-y-4 bg-white shadow-[var(--shadow-sm)]">
