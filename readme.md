@@ -1,6 +1,8 @@
 # 📄 RAG-based Document Question Answering System (LangChain + Qdrant)
 
-## Version 2 of the chatWithDoc (RAG Document Assistant) with LangChain integration, PDF-first ingestion, Runnable chains, and metadata-scoped retrieval.
+## Version 3 of the chatWithDoc (RAG Document Assistant)
+
+A fully integrated frontend + Django REST backend deployment with PDF-first ingestion, LangChain runnable chains, Redis-backed rate limiting, and Qdrant semantic retrieval.
 
 ## Previous Version (V1)
 
@@ -30,33 +32,47 @@ This project is designed with **clean architecture, cost efficiency, and intervi
 
 ## 🚀 Features
 
-- 📄 **PDF-first ingestion**
-  - PDF
+- 📄 **PDF-first ingestion** with exact PDF validation and Supabase upload
 
 - ✂️ **Token-based chunking with overlap** (LangChain)
 - 🧠 **OpenAI embeddings** (`text-embedding-3-small`)
 - 📦 **Vector storage using Qdrant**
 - 🔍 **Semantic retrieval scoped to the latest READY document**
 - 🤖 **GPT-based grounded answer generation** (LangChain Runnable chains)
+- 🔐 **JWT authentication** with user login, registration, and protected upload/chat flows
 - 🛡️ **Hallucination-controlled prompting**
+- ⚡ **Redis-backed rate limiting** for safer API usage
+- 🌐 **Integrated React frontend** with live Vercel deployment
+- 💾 **Supabase Storage for PDF file hosting** and **PostgreSQL** as the metadata source of truth
 - 💸 **Cost-optimized ingestion & retrieval**
-- 🐳 **Fully Dockerized setup** (Backend, PostgreSQL, Qdrant)
+- 🐳 **Fully Dockerized backend stack** (Django, PostgreSQL, Qdrant, Redis)
 
+---
+
+## 🌍 Live Deployment
+
+- Frontend deployed on Vercel: https://chat-with-doc-v3-0-0.vercel.app
 
 ---
 
 ## 🏗️ Architecture Overview
 
 ```
-Client
+Client (React + auth)
  └──> Django REST API
-        ├── /api/upload
-        │     ├── Load document (PDF)
+        ├── /api/v1/auth/
+        │     ├── register/
+        │     ├── login/
+        │     ├── me/
+        │     └── logout/
+        ├── /api/v1/upload/
+        │     ├── Upload PDF
+        │     ├── Save PDF to Supabase Storage
         │     ├── Token-based chunking
         │     ├── Embedding generation (OpenAI)
         │     └── Store vectors in Qdrant (with metadata)
         │
-        └── /api/ask
+        └── /api/v1/ask/
               ├── Fetch latest READY document (PostgreSQL)
               ├── Semantic retrieval (Qdrant, metadata-scoped)
               ├── Context assembly
@@ -73,36 +89,39 @@ Client
 * Python 3.11
 * Django
 * Django REST Framework
+* JWT auth via `djangorestframework-simplejwt`
+* Redis-backed rate limiting
 
 ### GenAI
 
-GenAI / RAG
-
 * LangChain (Runnable-based chains, v0.2+)
+* OpenAI embeddings (`text-embedding-3-small`)
+* OpenAI chat model (`gpt-4.1-mini`)
 
-OpenAI API
-
-* text-embedding-3-small
-
-* gpt-4.1-mini
-
-Vector Database
+### Vector Search
 
 * Qdrant (payload-based filtering with metadata)
 
-Storage
+### Storage
 
-* PostgreSQL
+* Supabase Storage for PDF uploads
+* PostgreSQL for metadata and document state
 
-Document lifecycle & metadata
-
-Source of truth for “latest document”
-
-Infrastructure
+### Infrastructure
 
 * Docker
-
 * Docker Compose
+* Vercel for frontend hosting
+
+---
+
+## 🌐 Platforms & Hosting
+
+- Frontend deployed on Vercel: `https://chat-with-doc-v3-0-0.vercel.app`
+- Backend runs on Django with JWT auth and Redis rate limiting
+- PDF files are stored in Supabase Storage
+- App metadata and document state are persisted in PostgreSQL
+- Qdrant powers the semantic retrieval vector store
 
 ---
 
@@ -122,6 +141,13 @@ Create a `.env` file in the project root:
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 OPENAI_CHAT_MODEL=gpt-4.1-mini
+DATABASE_URL=your_postgres_database_url
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_BUCKET=documents
+RATE_LIMIT=10
+RATE_LIMIT_WINDOW=60
+REDIS_URL=redis://redis:6379/0
 ```
 
 ---
@@ -148,6 +174,19 @@ This will start:
 * Django backend (`http://localhost:8000`)
 * PostgreSQL
 * Qdrant (`http://localhost:6333/dashboard`)
+* Redis for rate limiting
+
+---
+
+### 2.1️⃣ Run the Frontend Locally
+
+```bash
+cd client/chatwithdocUI
+npm install
+npm run dev
+```
+
+Then visit the Vite dev server URL shown in the terminal.
 
 ---
 
@@ -167,13 +206,17 @@ python manage.py migrate
 **Endpoint**
 
 ```
-POST /api/upload/
+POST /api/v1/upload/
 ```
+
+**Headers**
+
+* `Authorization: Bearer <access_token>`
 
 **Request**
 
 * `multipart/form-data`
-* Field: `files` (PDF)
+* Field: `files` (PDF only, max 1MB)
 
 **Response**
 
@@ -181,11 +224,9 @@ POST /api/upload/
 {
   "documents": [
     {
-     {
-    "document_id": 12,
-    "message": "Document uploaded and indexed successfully"
+      "document_id": 12,
+      "message": "Document uploaded and indexed successfully"
     }
-}
   ]
 }
 ```
@@ -197,7 +238,20 @@ POST /api/upload/
 **Endpoint**
 
 ```
-POST /api/ask/
+POST /api/v1/ask/
+```
+
+**Headers**
+
+* `Authorization: Bearer <access_token>`
+
+**Request Body**
+
+```json
+{
+  "question": "What technologies does the candidate know?",
+  "top_k": 3
+}
 ```
 
 **Request Body**
