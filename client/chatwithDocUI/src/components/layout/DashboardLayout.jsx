@@ -6,10 +6,8 @@ import Navbar from "./Navbar";
 import { useAuth } from "../../hooks/useAuth";
 
 const TITLES = {
-  "/dashboard": "Dashboard",
   "/upload": "Upload Documents",
   "/chat": "Ask Questions",
-  "/history": "History",
 };
 
 export default function DashboardLayout() {

@@ -1,13 +1,11 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, UploadCloud, MessagesSquare, History, LogOut, X } from "lucide-react";
+import { UploadCloud, MessagesSquare, LogOut, X } from "lucide-react";
 import Logo from "../ui/Logo";
 import { cn } from "../../utils/cn";
 
 const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/upload", label: "Upload Documents", icon: UploadCloud },
   { to: "/chat", label: "Ask Questions", icon: MessagesSquare },
-  { to: "/history", label: "History", icon: History },
 ];
 
 export default function Sidebar({ onLogout, mobileOpen, onCloseMobile }) {
