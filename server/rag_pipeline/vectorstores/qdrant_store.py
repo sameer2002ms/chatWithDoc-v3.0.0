@@ -9,6 +9,7 @@ from qdrant_client.http.models import (
     Filter,
     FieldCondition,
     MatchValue,
+    PayloadSchemaType,
 )
 
 from rag_pipeline.embeddings.openai_embedding import get_embeddings
@@ -42,14 +43,16 @@ def get_vectorstore(collection_name: str) -> QdrantVectorStore:
     # Get embedding dimension safely
     embedding_dim = len(embeddings.embed_query("dimension_check"))
 
-    if not client.collection_exists(collection_name):
-        client.create_collection(
+     # Create payload index for filtering
+    try:
+        client.create_payload_index(
             collection_name=collection_name,
-            vectors_config=VectorParams(
-                size=embedding_dim,
-                distance=Distance.COSINE,
-            ),
+            field_name="metadata.document_id",
+            field_schema=PayloadSchemaType.INTEGER,
         )
+    except Exception:
+        # Index already exists
+        pass
 
     return QdrantVectorStore(
         client=client,
