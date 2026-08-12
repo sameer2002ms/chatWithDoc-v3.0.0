@@ -66,7 +66,7 @@ class LangChainUploadAPIView(APIView):
                 document_id=doc.id,
                 source_type=source_type,
                 source_value=source_value,
-                collection_name="langchain_rag_collection",
+                collection_name="Rag-application",
             )
 
             # 5️⃣ Clean up the local temp copy (Supabase keeps the permanent copy)
@@ -126,7 +126,7 @@ class LangChainAskAPIView(APIView):
             )
 
         # 2️⃣ Retrieve using STRICT document_id filter
-        vectorstore = get_vectorstore("langchain_rag_collection")
+        vectorstore = get_vectorstore("Rag-application")
 
         retrieved_docs = retrieve_by_document_id(
             vectorstore=vectorstore,

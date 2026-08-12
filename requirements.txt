@@ -22,4 +22,6 @@ redis
 djangorestframework-simplejwt==5.5.1
 django-cors-headers
 dj-database-url
+
+dj_database_url
 supabase
