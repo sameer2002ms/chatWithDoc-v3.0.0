@@ -97,7 +97,9 @@ export default function UploadPanel({ onUploaded }) {
     } catch (err) {
       setStatus("error");
       setErrorMessage(
-        err?.response?.data?.detail || "Upload failed. Check the file and try again."
+        err?.response?.data?.error ||
+          err?.response?.data?.detail ||
+          "Upload failed. Check the file and try again."
       );
     }
   };
