@@ -1,0 +1,76 @@
+import os
+from functools import lru_cache
+
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import (
+    VectorParams,
+    Distance,
+    Filter,
+    FieldCondition,
+    MatchValue,
+)
+
+from langchain_rag.embeddings.openai_embedding import get_embeddings
+
+
+@lru_cache
+def get_qdrant_client() -> QdrantClient:
+    """
+    Singleton Qdrant client (Docker-safe).
+    """
+    qdrant_url = os.getenv("QDRANT_URL", "http://qdrant:6333")
+    return QdrantClient(url=qdrant_url)
+
+
+def get_vectorstore(collection_name: str) -> QdrantVectorStore:
+    """
+    Returns a Qdrant-backed LangChain vector store.
+    Ensures collection exists (idempotent).
+    """
+    client = get_qdrant_client()
+    embeddings = get_embeddings()
+
+    # Get embedding dimension safely
+    embedding_dim = len(embeddings.embed_query("dimension_check"))
+
+    if not client.collection_exists(collection_name):
+        client.create_collection(
+            collection_name=collection_name,
+            vectors_config=VectorParams(
+                size=embedding_dim,
+                distance=Distance.COSINE,
+            ),
+        )
+
+    return QdrantVectorStore(
+        client=client,
+        collection_name=collection_name,
+        embedding=embeddings,
+    )
+
+
+def retrieve_by_document_id(
+    *,
+    vectorstore: QdrantVectorStore,
+    query: str,
+    document_id: int,
+    k: int,
+):
+    """
+    Retrieve chunks strictly scoped to a single document_id.
+    """
+    qdrant_filter = Filter(
+        must=[
+            FieldCondition(
+                key="metadata.document_id",  # ✅ IMPORTANT FIX
+                match=MatchValue(value=document_id),
+            )
+        ]
+    )
+
+    return vectorstore.similarity_search(
+        query=query,
+        k=k,
+        filter=qdrant_filter,
+    )
